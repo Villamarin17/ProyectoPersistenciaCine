@@ -1,0 +1,159 @@
+
+===== Q1 suscripción vigente: SIN índice =====
+
+PLAN_TABLE_OUTPUT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 3369888731
+
+---------------------------------------------------------------------------
+| Id  | Operation		     | Name	     | Rows  | Cost (%CPU)|
+---------------------------------------------------------------------------
+|   0 | SELECT STATEMENT	     |		     |	   1 |	 344   (1)|
+|   1 |  NESTED LOOPS		     |		     |	   1 |	 344   (1)|
+|   2 |   NESTED LOOPS		     |		     |	   1 |	 344   (1)|
+|*  3 |    TABLE ACCESS FULL	     | SUBSCRIPTIONS |	   1 |	 343   (1)|
+|*  4 |    INDEX UNIQUE SCAN	     | PK_PLANS      |	   1 |	   0   (0)|
+|   5 |   TABLE ACCESS BY INDEX ROWID| PLANS	     |	   1 |	   1   (0)|
+---------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   3 - filter("S"."ACCOUNTID"=5010000 AND
+	      "S"."ENDSAT">SYS_EXTRACT_UTC(SYSTIMESTAMP(6)) AND
+	      "S"."STARTSAT"<=SYS_EXTRACT_UTC(SYSTIMESTAMP(6)) AND
+	      INTERNAL_FUNCTION("STARTSAT")+INTERVAL'+30 00:00:00' DAY(2) TO
+	      SECOND(0)>SYS_EXTRACT_UTC(SYSTIMESTAMP(6)))
+   4 - access("P"."PLANID"="S"."PLANID")
+Q1 suscripción vigente, sin índice               filas:   1   promedio: 2.260 ms
+
+===== Q1 suscripción vigente: CON índice =====
+
+PLAN_TABLE_OUTPUT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 2910343084
+
+---------------------------------------------------------------------------------------------
+| Id  | Operation			      | Name		       | Rows  | Cost (%CPU)|
+---------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT		      | 		       |     1 |     5	 (0)|
+|   1 |  NESTED LOOPS			      | 		       |     1 |     5	 (0)|
+|   2 |   NESTED LOOPS			      | 		       |     1 |     5	 (0)|
+|   3 |    TABLE ACCESS BY INDEX ROWID BATCHED| SUBSCRIPTIONS	       |     1 |     4	 (0)|
+|*  4 |     INDEX RANGE SCAN		      | IX_SUBS_ACCOUNT_PERIOD |     1 |     3	 (0)|
+|*  5 |    INDEX UNIQUE SCAN		      | PK_PLANS	       |     1 |     0	 (0)|
+|   6 |   TABLE ACCESS BY INDEX ROWID	      | PLANS		       |     1 |     1	 (0)|
+---------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   4 - access("S"."ACCOUNTID"=5010000 AND "S"."ENDSAT">SYS_EXTRACT_UTC(SYSTIMESTAMP(6
+	      )) AND "S"."STARTSAT"<=SYS_EXTRACT_UTC(SYSTIMESTAMP(6)))
+       filter("S"."STARTSAT"<=SYS_EXTRACT_UTC(SYSTIMESTAMP(6)) AND
+	      INTERNAL_FUNCTION("STARTSAT")+INTERVAL'+30 00:00:00' DAY(2) TO
+	      SECOND(0)>SYS_EXTRACT_UTC(SYSTIMESTAMP(6)))
+   5 - access("P"."PLANID"="S"."PLANID")
+Q1 suscripción vigente, con índice               filas:   1   promedio: 0.008 ms
+
+===== Q2 historial de la cuenta =====
+Q2 historial de cuenta, sin índice               filas:  10   promedio: 2.207 ms
+Q2 historial de cuenta, con índice               filas:  10   promedio: 0.013 ms
+
+===== Q3a informe de ingresos: SIN índice =====
+
+PLAN_TABLE_OUTPUT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 559082768
+
+----------------------------------------------------------------------------
+| Id  | Operation		| Name		      | Rows  | Cost (%CPU)|
+----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT	|		      |     3 |   734	(3)|
+|   1 |  HASH JOIN OUTER	|		      |     3 |   734	(3)|
+|   2 |   VIEW			| index$_join$_001    |     3 |     2	(0)|
+|   3 |    HASH JOIN		|		      |       | 	   |
+|   4 |     INDEX FAST FULL SCAN| PK_PLANS	      |     3 |     1	(0)|
+|   5 |     INDEX FAST FULL SCAN| UQ_PLANS_NAME       |     3 |     1	(0)|
+|   6 |   VIEW			| VW_GBC_5	      |     3 |   732	(3)|
+|   7 |    HASH GROUP BY	|		      |     3 |   732	(3)|
+|   8 |     VIEW		| VW_PAYMENTS_BY_PLAN |  4817 |   731	(3)|
+|   9 |      FILTER		|		      |       | 	   |
+|  10 |       HASH JOIN 	|		      |  4817 |   731	(3)|
+|  11 |        TABLE ACCESS FULL| PAYMENTS	      |  4817 |   388	(4)|
+|  12 |        TABLE ACCESS FULL| SUBSCRIPTIONS       |   200K|   343	(1)|
+----------------------------------------------------------------------------
+Q3a ingresos 7 días, sin índice                  filas:   3   promedio: 19.751 ms
+
+===== Q3b informe de ingresos: índice simple sobre paidAt =====
+
+PLAN_TABLE_OUTPUT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 559082768
+
+----------------------------------------------------------------------------
+| Id  | Operation		| Name		      | Rows  | Cost (%CPU)|
+----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT	|		      |     3 |   734	(3)|
+|   1 |  HASH JOIN OUTER	|		      |     3 |   734	(3)|
+|   2 |   VIEW			| index$_join$_001    |     3 |     2	(0)|
+|   3 |    HASH JOIN		|		      |       | 	   |
+|   4 |     INDEX FAST FULL SCAN| PK_PLANS	      |     3 |     1	(0)|
+|   5 |     INDEX FAST FULL SCAN| UQ_PLANS_NAME       |     3 |     1	(0)|
+|   6 |   VIEW			| VW_GBC_5	      |     3 |   732	(3)|
+|   7 |    HASH GROUP BY	|		      |     3 |   732	(3)|
+|   8 |     VIEW		| VW_PAYMENTS_BY_PLAN |  4817 |   731	(3)|
+|   9 |      FILTER		|		      |       | 	   |
+|  10 |       HASH JOIN 	|		      |  4817 |   731	(3)|
+|  11 |        TABLE ACCESS FULL| PAYMENTS	      |  4817 |   388	(4)|
+|  12 |        TABLE ACCESS FULL| SUBSCRIPTIONS       |   200K|   343	(1)|
+----------------------------------------------------------------------------
+
+===== Q3c informe de ingresos: índice ix_payments_paidat =====
+
+PLAN_TABLE_OUTPUT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 2084645922
+
+----------------------------------------------------------------------------
+| Id  | Operation		| Name		      | Rows  | Cost (%CPU)|
+----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT	|		      |     3 |   372	(2)|
+|   1 |  HASH JOIN OUTER	|		      |     3 |   372	(2)|
+|   2 |   VIEW			| index$_join$_001    |     3 |     2	(0)|
+|   3 |    HASH JOIN		|		      |       | 	   |
+|   4 |     INDEX FAST FULL SCAN| PK_PLANS	      |     3 |     1	(0)|
+|   5 |     INDEX FAST FULL SCAN| UQ_PLANS_NAME       |     3 |     1	(0)|
+|   6 |   VIEW			| VW_GBC_5	      |     3 |   370	(2)|
+|   7 |    HASH GROUP BY	|		      |     3 |   370	(2)|
+|   8 |     VIEW		| VW_PAYMENTS_BY_PLAN |  4817 |   368	(1)|
+|   9 |      FILTER		|		      |       | 	   |
+|  10 |       HASH JOIN 	|		      |  4817 |   368	(1)|
+|  11 |        INDEX RANGE SCAN | IX_PAYMENTS_PAIDAT  |  4817 |    25	(0)|
+|  12 |        TABLE ACCESS FULL| SUBSCRIPTIONS       |   200K|   343	(1)|
+----------------------------------------------------------------------------
+Q3c ingresos 7 días, con ix_payments_paidat      filas:   3   promedio: 7.926 ms
+
+===== Q3d informe de ingresos de un año =====
+
+PLAN_TABLE_OUTPUT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 3038431553
+
+-------------------------------------------------------------------------------
+| Id  | Operation		   | Name		 | Rows  | Cost (%CPU)|
+-------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT	   |			 |     3 |  1142   (3)|
+|   1 |  HASH JOIN OUTER	   |			 |     3 |  1142   (3)|
+|   2 |   VIEW			   | index$_join$_001	 |     3 |     2   (0)|
+|   3 |    HASH JOIN		   |			 |	 |	      |
+|   4 |     INDEX FAST FULL SCAN   | PK_PLANS		 |     3 |     1   (0)|
+|   5 |     INDEX FAST FULL SCAN   | UQ_PLANS_NAME	 |     3 |     1   (0)|
+|   6 |   VIEW			   | VW_GBC_5		 |     3 |  1140   (3)|
+|   7 |    HASH GROUP BY	   |			 |     3 |  1140   (3)|
+|   8 |     VIEW		   | VW_PAYMENTS_BY_PLAN |   200K|  1133   (2)|
+|   9 |      FILTER		   |			 |	 |	      |
+|  10 |       HASH JOIN 	   |			 |   200K|  1133   (2)|
+|  11 |        TABLE ACCESS FULL   | SUBSCRIPTIONS	 |   200K|   343   (1)|
+|  12 |        INDEX FAST FULL SCAN| IX_PAYMENTS_PAIDAT  |   200K|   277   (7)|
+-------------------------------------------------------------------------------
