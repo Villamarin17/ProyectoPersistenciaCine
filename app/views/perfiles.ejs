@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+<h1>¿Quién está viendo?</h1>
+<% if (active) { %>
+  <p class="muted">Plan <%= active.planName %>: hasta <%= active.maxProfiles %> perfil<%= active.maxProfiles > 1 ? 'es' : '' %> activo<%= active.maxProfiles > 1 ? 's' : '' %>.</p>
+<% } else { %>
+  <div class="flash error">La cuenta no tiene suscripción vigente: no puede crear perfiles ni reproducir. <a href="/cuenta">Contratar un plan</a></div>
+<% } %>
+<div class="profiles">
+  <% profiles.forEach(p => { %>
+    <div class="profile <%= p.isActive === 'Y' ? '' : 'off' %>">
+      <div class="avatar"><%= p.name.charAt(0).toUpperCase() %></div>
+      <b><%= p.name %></b>
+      <span class="muted small">Hasta <%= p.maxAgeRating %> años<%= p.isActive === 'Y' ? '' : ' · inactivo' %></span>
+      <% if (p.isActive === 'Y') { %>
+        <form method="post" action="/perfiles/<%= p.profileId %>/seleccionar"><button class="btn">Ver</button></form>
+        <form method="post" action="/perfiles/<%= p.profileId %>/estado"><input type="hidden" name="activo" value="N"><button class="link small">Desactivar</button></form>
+      <% } else { %>
+        <form method="post" action="/perfiles/<%= p.profileId %>/estado"><input type="hidden" name="activo" value="Y"><button class="link small">Activar</button></form>
+      <% } %>
+    </div>
+  <% }) %>
+</div>
+<section class="card">
+  <h2>Nuevo perfil</h2>
+  <form method="post" action="/perfiles" class="form inline">
+    <label>Nombre <input name="name" maxlength="60" required></label>
+    <label>Edad máxima de clasificación
+      <select name="maxAgeRating"><% [18, 16, 12, 7, 0].forEach(a => { %><option value="<%= a %>"><%= a === 0 ? 'Todo público' : a + ' años' %></option><% }) %></select>
+    </label>
+    <button class="btn">Crear perfil</button>
+  </form>
+</section>
+<%- include('partials/footer') %>

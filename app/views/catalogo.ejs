@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+<h1>Catálogo</h1>
+<form method="get" action="/catalogo" class="filters">
+  <input name="q" placeholder="Buscar por título" value="<%= q.q || '' %>">
+  <select name="type"><option value="">Todos los tipos</option>
+    <% [['movie','Películas'],['series','Series'],['documentary','Documentales']].forEach(([v,t]) => { %><option value="<%= v %>" <%= q.type === v ? 'selected' : '' %>><%= t %></option><% }) %></select>
+  <select name="genre"><option value="">Todos los géneros</option>
+    <% options.genres.forEach(g => { %><option <%= q.genre === g ? 'selected' : '' %>><%= g %></option><% }) %></select>
+  <select name="lang"><option value="">Todos los idiomas</option>
+    <% options.langs.forEach(l => { %><option <%= q.lang === l ? 'selected' : '' %>><%= l %></option><% }) %></select>
+  <select name="year"><option value="">Todos los años</option>
+    <% options.years.forEach(y => { %><option <%= String(q.year) === String(y) ? 'selected' : '' %>><%= y %></option><% }) %></select>
+  <button class="btn">Buscar</button>
+</form>
+<p class="muted small"><%= result.total %> resultado<%= result.total === 1 ? '' : 's' %> · solo contenidos publicados hasta <%= profile.maxAgeRating %> años</p>
+<div class="grid">
+  <% result.items.forEach(c => { %><%- include('partials/poster', { c }) %><% }) %>
+</div>
+<% if (result.pages > 1) { %>
+<nav class="pager">
+  <% const qs = p => new URLSearchParams({ ...q, page: p }).toString(); %>
+  <% if (result.page > 1) { %><a href="?<%= qs(result.page - 1) %>">« Anterior</a><% } %>
+  <span>Página <%= result.page %> de <%= result.pages %></span>
+  <% if (result.page < result.pages) { %><a href="?<%= qs(result.page + 1) %>">Siguiente »</a><% } %>
+</nav>
+<% } %>
+<%- include('partials/footer') %>

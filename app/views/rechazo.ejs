@@ -1,0 +1,7 @@
+<%- include('partials/header') %>
+<section class="card narrow">
+  <h1><%= title %></h1>
+  <p><%= motivo %></p>
+  <% if (typeof enlace !== 'undefined' && enlace) { %><p><a class="btn" href="<%= enlace.href %>"><%= enlace.texto %></a></p><% } %>
+</section>
+<%- include('partials/footer') %>

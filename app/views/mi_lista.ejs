@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+<h1>Mi lista</h1>
+<% if (!items.length) { %><p class="muted">La lista está vacía.</p><% } else { %>
+<table>
+  <thead><tr><th>Título</th><th>Tipo</th><th>Agregado</th><th>Estado</th><th></th></tr></thead>
+  <tbody>
+  <% items.forEach(i => { const ok = i.status === 'published' && i.ageRating <= profile.maxAgeRating; %>
+    <tr class="<%= ok ? '' : 'off' %>">
+      <td><% if (ok) { %><a href="/contenido/<%= encodeURIComponent(i.contentId) %>"><%= i.title %></a><% } else { %><%= i.title %><% } %></td>
+      <td><%= f.typeName(i.type) %></td>
+      <td><%= f.date(i.addedAt) %></td>
+      <td><%= i.status === 'retired' ? 'Retirado del catálogo' : ok ? 'Disponible' : 'No disponible' %></td>
+      <td><form method="post" action="/mi-lista/<%= encodeURIComponent(i.contentId) %>"><input type="hidden" name="accion" value="quitar"><input type="hidden" name="volver" value="lista"><button class="link small">Quitar</button></form></td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+<% } %>
+<%- include('partials/footer') %>

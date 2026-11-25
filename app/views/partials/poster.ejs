@@ -1,0 +1,5 @@
+<a class="poster" href="/contenido/<%= encodeURIComponent(c._id || c.contentId) %>">
+  <img src="<%= c.coverUrl %>" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+  <span class="ptitle"><%= c.title %></span>
+  <span class="muted small"><%= f.typeName(c.type) %><% if (c.releaseYear) { %> · <%= c.releaseYear %><% } %><% if (c.ageRating !== undefined) { %> · <%= c.ageRating === 0 ? 'TP' : '+' + c.ageRating %><% } %></span>
+</a>

@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+<section class="card player" id="player"
+  data-session="<%= s._id %>" data-duration="<%= s.itemDurationSec %>" data-position="<%= s.lastPositionSec %>" data-max-speed="<%= maxSpeed %>">
+  <h1><%= label %></h1>
+  <div class="screen"><span id="state">En pausa</span></div>
+  <div class="bar big"><div id="progress"></div></div>
+  <p class="mono"><span id="pos">0:00</span> / <%= f.clock(s.itemDurationSec) %> · visto en esta sesión: <span id="watched">0:00</span> · saltado: <span id="seeked">0:00</span></p>
+  <div class="actions">
+    <button class="btn" id="play">▶ Reproducir</button>
+    <button class="btn secondary" id="pause">❚❚ Pausar</button>
+    <button class="btn secondary" data-seek="60">Avanzar 1 min</button>
+    <button class="btn secondary" data-seek="600">Avanzar 10 min</button>
+    <label class="small">Velocidad de la simulación
+      <select id="speed"><option value="1">1x</option><option value="10">10x</option><option value="60" selected>60x</option></select></label>
+    <button class="btn secondary" id="stop">Detener</button>
+    <button class="btn" id="finish">Finalizar</button>
+  </div>
+  <p class="muted small" id="msg">Sesión <span class="mono"><%= s._id %></span>. El tiempo visto no incluye los avances.</p>
+</section>
+<script src="/player.js"></script>
+<%- include('partials/footer') %>

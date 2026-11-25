@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+<h1>Mi cuenta</h1>
+<section class="card">
+  <h2>Suscripción</h2>
+  <% if (active) { %>
+    <p>Plan <b><%= active.planName %></b> vigente hasta el <%= f.dateTime(active.endsAt) %>.</p>
+  <% } else { %>
+    <p>No tiene una suscripción vigente.</p>
+  <% } %>
+</section>
+<section class="card">
+  <h2>Contratar un plan</h2>
+  <p class="muted">Todas las suscripciones duran 30 días. Solo se puede contratar si no hay una vigente. El pago es simulado.</p>
+  <form method="post" action="/cuenta/contratar" class="form inline">
+    <label>Plan
+      <select name="planId">
+        <% plans.forEach(p => { %><option value="<%= p.planId %>"><%= p.name %> · <%= f.money(p.price) %> · hasta <%= p.maxProfiles %> perfil<%= p.maxProfiles > 1 ? 'es' : '' %></option><% }) %>
+      </select>
+    </label>
+    <label>Resultado del pago
+      <select name="pago"><option value="aprobar">Aprobar</option><option value="rechazar">Rechazar</option></select>
+    </label>
+    <button class="btn">Pagar y contratar</button>
+  </form>
+</section>
+<section class="card">
+  <h2>Historial de suscripciones y pagos</h2>
+  <% if (!history.length) { %><p class="muted">Sin registros.</p><% } else { %>
+  <table>
+    <thead><tr><th>#</th><th>Plan</th><th>Inicio</th><th>Fin</th><th>Estado</th><th>Pago</th><th>Valor</th><th>Referencia</th></tr></thead>
+    <tbody>
+    <% history.forEach(s => { %>
+      <tr><td><%= s.subscriptionId %></td><td><%= s.planName %></td><td><%= f.dateTime(s.startsAt) %></td><td><%= f.dateTime(s.endsAt) %></td>
+          <td><span class="tag <%= s.state === 'Vigente' ? 'ok' : '' %>"><%= s.state %></span></td><td><%= f.dateTime(s.paidAt) %></td>
+          <td><%= f.money(s.amount) %></td><td class="mono small"><%= s.reference %></td></tr>
+    <% }) %>
+    </tbody>
+  </table>
+  <% } %>
+</section>
+<%- include('partials/footer') %>

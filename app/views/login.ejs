@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+<section class="card narrow">
+  <h1>Ingresar</h1>
+  <% if (typeof error !== 'undefined') { %><div class="flash error"><%= error %></div><% } %>
+  <form method="post" action="/login" class="form">
+    <label>Correo <input type="email" name="email" value="<%= email %>" required autofocus></label>
+    <label>Contraseña <input type="password" name="password" required></label>
+    <button class="btn">Ingresar</button>
+  </form>
+  <p class="muted">¿No tiene cuenta? <a href="/registro">Créela aquí</a>.</p>
+</section>
+<%- include('partials/footer') %>

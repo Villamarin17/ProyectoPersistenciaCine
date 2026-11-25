@@ -1,0 +1,25 @@
+{
+  "name": "cineconecta",
+  "version": "1.0.0",
+  "description": "CineConecta: aplicación web con persistencia políglota (Oracle + MongoDB)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "author": "Equipo Comadritas: Estefany Villamarin, Valeria Valencia",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.6.1",
+    "ejs": "^3.1.10",
+    "express": "^4.22.3",
+    "express-session": "^1.19.0",
+    "mongodb": "^6.22.0",
+    "oracledb": "^6.10.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "private": true
+}

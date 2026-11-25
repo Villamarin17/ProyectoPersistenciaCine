@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · CineConecta</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="<%= sess.admin ? '/admin' : '/' %>">CineConecta<% if (sess.admin) { %> <small>admin</small><% } %></a>
+  <nav>
+    <% if (sess.admin) { %>
+      <% if (sess.admin.roles.includes('catalog_manager')) { %><a href="/admin/contenidos">Catálogo</a><% } %>
+      <% if (sess.admin.roles.includes('report_viewer')) { %><a href="/admin/informes/ingresos">Ingresos</a><a href="/admin/informes/consumo">Consumo</a><% } %>
+      <span class="who"><%= sess.admin.username %></span>
+      <form method="post" action="/admin/logout"><button class="link">Salir</button></form>
+    <% } else if (sess.accountId) { %>
+      <% if (sess.profileId) { %>
+        <a href="/inicio">Inicio</a><a href="/catalogo">Catálogo</a><a href="/mi-lista">Mi lista</a>
+      <% } %>
+      <a href="/perfiles">Perfiles</a><a href="/cuenta">Mi cuenta</a>
+      <span class="who"><%= sess.accountName %><% if (sess.profileName && sess.profileId) { %> · <%= sess.profileName %><% } %></span>
+      <form method="post" action="/logout"><button class="link">Salir</button></form>
+    <% } else { %>
+      <a href="/login">Ingresar</a><a href="/registro">Crear cuenta</a><a href="/admin/login">Administración</a>
+    <% } %>
+  </nav>
+</header>
+<main>
+<% if (flash) { %><div class="flash <%= flash.type %>"><%= flash.text %></div><% } %>

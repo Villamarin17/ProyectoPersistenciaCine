@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+<section class="detail">
+  <img class="cover" src="<%= c.coverUrl %>" alt="" onerror="this.style.visibility='hidden'">
+  <div>
+    <h1><%= c.title %></h1>
+    <p class="muted"><%= f.typeName(c.type) %> · <%= c.releaseYear %> · <%= c.ageRating === 0 ? 'Todo público' : 'Mayores de ' + c.ageRating %>
+      <% if (c.durationSec) { %> · <%= f.minutes(c.durationSec) %><% } %> · <span class="mono small"><%= c._id %></span></p>
+    <p><%= c.synopsis %></p>
+    <p class="small">Géneros: <%= c.genres.join(', ') %> · Países: <%= c.productionCountries.join(', ') %><br>
+      Audio: <%= c.audioLanguages.join(', ') %> · Subtítulos: <%= c.subtitleLanguages.join(', ') || 'ninguno' %></p>
+    <% if (c.directors) { %><p class="small">Dirección: <%= c.directors.map(d => d.name).join(', ') %></p><% } %>
+    <% if (c.cast && c.cast.length) { %><p class="small">Reparto: <%= c.cast.map(a => a.name + (a.character ? ' (' + a.character + ')' : '')).join(', ') %></p><% } %>
+    <% if (c.topics) { %><p class="small">Temas: <%= c.topics.join(', ') %></p><% } %>
+    <% if (c.interviewees && c.interviewees.length) { %><p class="small">Entrevistados: <%= c.interviewees.map(i => i.name + (i.description ? ' (' + i.description + ')' : '')).join(', ') %></p><% } %>
+    <% if (c.sources && c.sources.length) { %><p class="small">Fuentes: <%= c.sources.map(s => s.name + (s.role ? ' (' + s.role + ')' : '')).join(', ') %></p><% } %>
+    <div class="actions">
+      <% if (c.type !== 'series') { const p = prog[c._id]; %>
+        <form method="post" action="/reproducir/<%= encodeURIComponent(c._id) %>">
+          <button class="btn"><%= p && !p.completed ? 'Reanudar en ' + f.clock(p.positionSec) : 'Reproducir' %></button>
+        </form>
+      <% } %>
+      <form method="post" action="/mi-lista/<%= encodeURIComponent(c._id) %>">
+        <input type="hidden" name="accion" value="<%= inList ? 'quitar' : 'agregar' %>">
+        <button class="btn secondary"><%= inList ? 'Quitar de Mi lista' : 'Agregar a Mi lista' %></button>
+      </form>
+    </div>
+  </div>
+</section>
+<% if (c.type === 'series') { %>
+  <% c.seasons.forEach(s => { %>
+  <section class="card">
+    <h2>Temporada <%= s.number %>: <%= s.description %></h2>
+    <table>
+      <tbody>
+      <% s.episodes.forEach(e => { const p = prog[e.episodeId]; %>
+        <tr>
+          <td><%= e.number %></td>
+          <td><b><%= e.title %></b><br><span class="muted small"><%= e.synopsis %></span></td>
+          <td class="small"><%= f.minutes(e.durationSec) %><% if (p) { %><br><span class="muted"><%= p.completed ? 'Visto' : 'Va en ' + f.clock(p.positionSec) %></span><% } %></td>
+          <td><form method="post" action="/reproducir/<%= encodeURIComponent(c._id) %>">
+            <input type="hidden" name="episodeId" value="<%= e.episodeId %>"><button class="btn small">▶</button></form></td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </section>
+  <% }) %>
+<% } %>
+<%- include('partials/footer') %>
