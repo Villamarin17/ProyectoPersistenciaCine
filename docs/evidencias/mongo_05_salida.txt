@@ -1,0 +1,50 @@
+
+===== Q1a informe de consumo 7 días: sin índice =====
+recorrido completo de la colección
+  plan:              GROUP <- COLLSCAN
+  filas devueltas:   9
+  claves examinadas: 0
+  docs examinados:   200087
+  tiempo (explain):  82 ms
+  promedio 7 días: 85.3 ms   promedio un año: 183.2 ms
+
+===== Q1b informe de consumo 7 días: índice simple { startedAt, planId, contentType } =====
+tmp_report_simple
+  plan:              GROUP <- FETCH <- IXSCAN(tmp_report_simple)
+  filas devueltas:   9
+  claves examinadas: 11371
+  docs examinados:   11371
+  tiempo (explain):  37 ms
+  promedio 7 días: 34.0 ms   promedio un año: 591.0 ms
+
+===== Q1c informe de consumo 7 días: ix_sessions_report (índice cubriente) =====
+ix_sessions_report { startedAt, planId, contentType, profileId, watchedSec }
+  plan:              GROUP <- PROJECTION_COVERED <- IXSCAN(ix_sessions_report)
+  filas devueltas:   9
+  claves examinadas: 11371
+  docs examinados:   0
+  tiempo (explain):  7 ms
+  promedio 7 días: 9.1 ms   promedio un año: 138.2 ms
+  filas del informe: 9
+
+===== Q2 sesiones activas sin latido =====
+Sin índice (recorrido completo)
+  plan:              COLLSCAN
+  filas devueltas:   0
+  claves examinadas: 0
+  docs examinados:   200087
+  tiempo (explain):  71 ms
+  promedio 20 ejecuciones: 85.6 ms
+Con ix_sessions_open (parcial, status = active)
+  plan:              FETCH <- IXSCAN(ix_sessions_open)
+  filas devueltas:   0
+  claves examinadas: 0
+  docs examinados:   0
+  tiempo (explain):  0 ms
+  promedio 20 ejecuciones: 1.6 ms
+
+===== Tamaño de índices de viewingSessions (KB) =====
+  _id_                  4988
+  ix_sessions_report    5992
+  ix_sessions_open      32
+  documentos: 200087
