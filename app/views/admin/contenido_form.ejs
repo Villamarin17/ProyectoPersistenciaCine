@@ -1,0 +1,28 @@
+<%- include('../partials/header') %>
+<h1><%= isNew ? 'Nuevo contenido: ' + f.typeName(c.type) : 'Editar ' + c._id %></h1>
+<% if (typeof error !== 'undefined') { %><div class="flash error"><%= error %></div><% } %>
+<form method="post" action="<%= isNew ? '/admin/contenidos/nuevo' : '/admin/contenidos/' + c._id %>" class="form card">
+  <input type="hidden" name="type" value="<%= c.type %>">
+  <% if (!isNew) { %><p class="muted">Tipo: <%= f.typeName(c.type) %> · Estado: <%= f.statusName(c.status) %> · El identificador no cambia.</p><% } %>
+  <div class="cols">
+    <label>Título <input name="title" value="<%= c.title || '' %>" required></label>
+    <label>Año de estreno <input type="number" name="releaseYear" min="1888" max="2100" value="<%= c.releaseYear || '' %>" required></label>
+    <label>Clasificación (edad mínima)
+      <select name="ageRating"><% [0, 7, 12, 16, 18].forEach(a => { %><option value="<%= a %>" <%= String(c.ageRating) === String(a) ? 'selected' : '' %>><%= a %></option><% }) %></select></label>
+  </div>
+  <label>Sinopsis <textarea name="synopsis" rows="2" required><%= c.synopsis || '' %></textarea></label>
+  <div class="cols">
+    <label>Géneros (separados por coma) <input name="genres" value="<%= c.genres || '' %>" required></label>
+    <label>Países (ISO, p. ej. CO, MX) <input name="productionCountries" value="<%= c.productionCountries || '' %>" required></label>
+  </div>
+  <div class="cols">
+    <label>Idiomas de audio (es, en…) <input name="audioLanguages" value="<%= c.audioLanguages || '' %>" required></label>
+    <label>Idiomas de subtítulos <input name="subtitleLanguages" value="<%= c.subtitleLanguages || '' %>"></label>
+  </div>
+  <label>URL de la portada <input name="coverUrl" value="<%= c.coverUrl || 'https://picsum.photos/seed/nuevo/300/450' %>" required></label>
+  <label>Atributos del tipo (JSON). Duraciones en segundos.
+    <% if (c.type === 'series') { %>Los episodios nuevos reciben su id (EP-…) al guardar; los existentes conservan el suyo.<% } %>
+    <textarea name="specific" rows="16" class="mono"><%= specific %></textarea></label>
+  <button class="btn">Guardar</button> <a href="/admin/contenidos">Cancelar</a>
+</form>
+<%- include('../partials/footer') %>

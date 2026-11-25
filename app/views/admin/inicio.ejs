@@ -1,0 +1,11 @@
+<%- include('../partials/header') %>
+<h1>Administración</h1>
+<p>Usuario <b><%= sess.admin.fullName %></b> · roles: <%= sess.admin.roles.join(', ') %></p>
+<div class="profiles">
+  <% if (sess.admin.roles.includes('catalog_manager')) { %><a class="card tile" href="/admin/contenidos"><h2>Catálogo</h2><p class="muted">Registrar, actualizar, publicar y retirar contenidos.</p></a><% } %>
+  <% if (sess.admin.roles.includes('report_viewer')) { %>
+    <a class="card tile" href="/admin/informes/ingresos"><h2>Ingresos por plan</h2><p class="muted">Pagos registrados en Oracle.</p></a>
+    <a class="card tile" href="/admin/informes/consumo"><h2>Consumo por plan y tipo</h2><p class="muted">Sesiones de MongoDB con el plan vigente al iniciarlas.</p></a>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

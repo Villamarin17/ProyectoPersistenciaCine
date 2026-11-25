@@ -1,0 +1,6 @@
+<form method="get" class="filters">
+  <label>Desde <input type="date" name="desde" value="<%= r.desde %>"></label>
+  <label>Hasta <input type="date" name="hasta" value="<%= r.hasta %>"></label>
+  <button class="btn">Consultar</button>
+  <a class="btn secondary" href="?desde=<%= r.desde %>&hasta=<%= r.hasta %>&formato=csv">Exportar CSV</a>
+</form>

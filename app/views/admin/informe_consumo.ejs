@@ -1,0 +1,16 @@
+<%- include('../partials/header') %>
+<h1>Consumo por plan y tipo de contenido</h1>
+<%- include('informe_filtros', { r }) %>
+<% if (warning) { %><div class="flash error"><%= warning %></div><% } %>
+<p class="muted small">Sesiones iniciadas entre el <%= r.desde %> y el <%= r.hasta %>. Cada sesión cuenta con el plan vigente al iniciarla; los episodios cuentan dentro de su serie.</p>
+<table>
+  <thead><tr><th>Plan</th><th>Tipo de contenido</th><th class="num">Minutos visualizados</th><th class="num">Perfiles distintos</th><th class="num">Sesiones</th></tr></thead>
+  <tbody>
+  <% rows.forEach(x => { %>
+    <tr><td><%= x.planName %></td><td><%= f.typeName(x.contentType) %></td><td class="num"><%= x.minutes.toLocaleString('es-CO') %></td>
+        <td class="num"><%= x.distinctProfiles %></td><td class="num"><%= x.sessions %></td></tr>
+  <% }) %>
+  <% if (!rows.length) { %><tr><td colspan="5" class="muted">No hay sesiones en el período.</td></tr><% } %>
+  </tbody>
+</table>
+<%- include('../partials/footer') %>

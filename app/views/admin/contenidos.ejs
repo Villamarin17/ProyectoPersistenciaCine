@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+<h1>Catálogo</h1>
+<form method="get" class="filters">
+  <input name="q" placeholder="Título" value="<%= q.q || '' %>">
+  <select name="type"><option value="">Todos los tipos</option><% [['movie','Películas'],['series','Series'],['documentary','Documentales']].forEach(([v,t]) => { %><option value="<%= v %>" <%= q.type === v ? 'selected' : '' %>><%= t %></option><% }) %></select>
+  <select name="status"><option value="">Todos los estados</option><% ['draft','published','retired'].forEach(s => { %><option value="<%= s %>" <%= q.status === s ? 'selected' : '' %>><%= f.statusName(s) %></option><% }) %></select>
+  <button class="btn">Filtrar</button>
+  <span class="spacer"></span>
+  <a class="btn secondary" href="/admin/contenidos/nuevo?type=movie">+ Película</a>
+  <a class="btn secondary" href="/admin/contenidos/nuevo?type=series">+ Serie</a>
+  <a class="btn secondary" href="/admin/contenidos/nuevo?type=documentary">+ Documental</a>
+</form>
+<table>
+  <thead><tr><th>Id</th><th>Título</th><th>Tipo</th><th>Año</th><th>Clasif.</th><th>Estado</th><th>Actualizado</th><th></th></tr></thead>
+  <tbody>
+  <% items.forEach(c => { %>
+    <tr>
+      <td class="mono small"><%= c._id %></td><td><a href="/admin/contenidos/<%= c._id %>"><%= c.title %></a></td>
+      <td><%= f.typeName(c.type) %></td><td><%= c.releaseYear %></td><td><%= c.ageRating %></td>
+      <td><span class="tag <%= c.status === 'published' ? 'ok' : '' %>"><%= f.statusName(c.status) %></span></td>
+      <td class="small"><%= f.dateTime(c.updatedAt) %></td>
+      <td><form method="post" action="/admin/contenidos/<%= c._id %>/estado">
+        <% if (c.status === 'published') { %><input type="hidden" name="estado" value="retired"><button class="link small">Retirar</button>
+        <% } else { %><input type="hidden" name="estado" value="published"><button class="link small">Publicar</button><% } %>
+      </form></td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+<%- include('../partials/footer') %>

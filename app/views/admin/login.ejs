@@ -1,0 +1,12 @@
+<%- include('../partials/header') %>
+<section class="card narrow">
+  <h1>Administración</h1>
+  <% if (typeof error !== 'undefined') { %><div class="flash error"><%= error %></div><% } %>
+  <form method="post" action="/admin/login" class="form">
+    <label>Usuario <input name="username" value="<%= username %>" required autofocus></label>
+    <label>Contraseña <input type="password" name="password" required></label>
+    <button class="btn">Ingresar</button>
+  </form>
+  <p class="muted small">Los usuarios administrativos están en MongoDB y son independientes de las cuentas de clientes.</p>
+</section>
+<%- include('../partials/footer') %>

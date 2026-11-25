@@ -1,0 +1,14 @@
+<%- include('../partials/header') %>
+<h1>Ingresos por plan</h1>
+<%- include('informe_filtros', { r }) %>
+<p class="muted small">Pagos registrados en Oracle entre el <%= r.desde %> y el <%= r.hasta %> (hora de Colombia).</p>
+<table>
+  <thead><tr><th>Plan</th><th class="num">Suscripciones adquiridas</th><th class="num">Total recaudado</th></tr></thead>
+  <tbody>
+  <% let t = 0, n = 0; rows.forEach(x => { t += Number(x.total); n += x.subscriptions; %>
+    <tr><td><%= x.planName %></td><td class="num"><%= x.subscriptions %></td><td class="num"><%= f.money(x.total) %></td></tr>
+  <% }) %>
+  </tbody>
+  <tfoot><tr><th>Total</th><th class="num"><%= n %></th><th class="num"><%= f.money(t) %></th></tr></tfoot>
+</table>
+<%- include('../partials/footer') %>
